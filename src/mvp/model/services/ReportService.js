@@ -1,4 +1,5 @@
 import ReportRepository from '../repositories/ReportRepository.js';
+import TherapistRepository from '../repositories/TherapistRepository.js';
 import ReportAdapter from '../adapters/ReportAdapter.js';
 
 /**
@@ -14,7 +15,10 @@ export default class ReportService {
   }
   
   async getReportData() {
-    const bookings = await ReportRepository.getBookings();
-    return this.adapter.aggregateToMonthly(bookings);
+    const [bookings, therapists] = await Promise.all([
+      ReportRepository.getBookings(),
+      TherapistRepository.getAll()
+    ]);
+    return this.adapter.aggregateToMonthly(bookings, therapists);
   }
 }

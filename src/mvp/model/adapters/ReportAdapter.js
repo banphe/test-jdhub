@@ -10,8 +10,9 @@ export default class ReportAdapter {
    * Agreguje surowe bookings do struktury miesięcznej.
    * Zwraca format: [{ key, monthName, year, days: {}, totalNet, totalCount, utilization }]
    */
-  aggregateToMonthly(bookings) {
+  aggregateToMonthly(bookings, therapists = []) {
     const monthsMap = {};
+    const daysOffMap = this.#buildDaysOffMap(therapists);
     
     // Filtruj anulowane i nieobecności
     const validBookings = bookings.filter(b => 
@@ -39,11 +40,14 @@ export default class ReportAdapter {
       }
       
       if (!monthsMap[monthKey].days[day]) {
+        const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        const hoursAvailable = this.#calculateDayAvailableHours(therapists, dateStr, daysOffMap);
+        
         monthsMap[monthKey].days[day] = {
           day,
           net: 0,
           count: 0,
-          utilization: { hoursWorked: 0, hoursAvailable: 30, percentage: 0 }
+          utilization: { hoursWorked: 0, hoursAvailable, percentage: 0 }
         };
       }
       
@@ -71,13 +75,17 @@ export default class ReportAdapter {
       monthsMap[monthKey].utilization.hoursWorked += therapistHours;
     });
     
-    // Oblicz percentage dla miesięcy
+    // Oblicz hoursAvailable i percentage dla miesięcy
     Object.values(monthsMap).forEach(month => {
-      const daysCount = Object.keys(month.days).length;
-      month.utilization.hoursAvailable = daysCount * 30;
-      month.utilization.percentage = Math.round(
-        (month.utilization.hoursWorked / month.utilization.hoursAvailable) * 100
-      );
+      Object.values(month.days).forEach(day => {
+        month.utilization.hoursAvailable += day.utilization.hoursAvailable;
+      });
+      
+      if (month.utilization.hoursAvailable > 0) {
+        month.utilization.percentage = Math.round(
+          (month.utilization.hoursWorked / month.utilization.hoursAvailable) * 100
+        );
+      }
     });
     
     // Zwróć tablicę posortowaną chronologicznie
@@ -143,5 +151,39 @@ export default class ReportAdapter {
       default:
         return 0;
     }
+  }
+  
+  /**
+   * Buduje mapę dni wolnych dla szybkiego dostępu O(1).
+   * Klucz: "YYYY-MM-DD_TherapistName"
+   */
+  #buildDaysOffMap(therapists) {
+    const map = {};
+    therapists.forEach(therapist => {
+      const daysOff = therapist.daysOff || [];
+      daysOff.forEach(dateStr => {
+        const key = `${dateStr}_${therapist.name}`;
+        map[key] = true;
+      });
+    });
+    return map;
+  }
+  
+  /**
+   * Oblicza ile godzin jest dostępnych danego dnia.
+   * Suma dla wszystkich terapeutów bez day off.
+   * Każdy terapeuta = 13h (10:00-23:00).
+   */
+  #calculateDayAvailableHours(therapists, dateStr, daysOffMap) {
+    let availableTherapists = 0;
+    
+    therapists.forEach(therapist => {
+      const dayOffKey = `${dateStr}_${therapist.name}`;
+      if (!daysOffMap[dayOffKey]) {
+        availableTherapists++;
+      }
+    });
+    
+    return availableTherapists * 13;
   }
 }
