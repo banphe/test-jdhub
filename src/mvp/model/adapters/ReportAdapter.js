@@ -14,10 +14,6 @@ export default class ReportAdapter {
     const monthsMap = {};
     const daysOffMap = this.#buildDaysOffMap(therapistDaysOff);
     
-    console.log('DEBUG: Therapists count:', therapists.length);
-    console.log('DEBUG: Therapists:', therapists);
-    console.log('DEBUG: Days off count:', therapistDaysOff.length);
-    
     // Filtruj anulowane i nieobecności
     const validBookings = bookings.filter(b => 
       b.status !== BOOKING_STATUS.CANCELLED && 
@@ -79,12 +75,38 @@ export default class ReportAdapter {
       monthsMap[monthKey].utilization.hoursWorked += therapistHours;
     });
     
-    // Oblicz hoursAvailable i percentage dla miesięcy
+    // Uzupełnij wszystkie dni miesiąca (1-31) i oblicz hoursAvailable
     Object.values(monthsMap).forEach(month => {
-      Object.values(month.days).forEach(day => {
-        month.utilization.hoursAvailable += day.utilization.hoursAvailable;
-      });
+      const daysInMonth = new Date(month.year, parseInt(month.key.split('-')[1]), 0).getDate();
+      const fullDaysArray = [];
       
+      for (let day = 1; day <= daysInMonth; day++) {
+        const dateStr = `${month.year}-${month.key.split('-')[1]}-${String(day).padStart(2, '0')}`;
+        const hoursAvailable = this.#calculateDayAvailableHours(therapists, dateStr, daysOffMap);
+        
+        const dayData = month.days[day] || {
+          day,
+          net: 0,
+          count: 0,
+          utilization: { hoursWorked: 0, hoursAvailable: 0, percentage: 0 }
+        };
+        
+        dayData.utilization.hoursAvailable = hoursAvailable;
+        
+        if (hoursAvailable > 0 && dayData.utilization.hoursWorked > 0) {
+          dayData.utilization.percentage = Math.round(
+            (dayData.utilization.hoursWorked / hoursAvailable) * 100
+          );
+        }
+        
+        fullDaysArray.push(dayData);
+        month.utilization.hoursAvailable += hoursAvailable;
+      }
+      
+      // Zamień obiekt days na tablicę
+      month.days = fullDaysArray;
+      
+      // Oblicz percentage dla miesiąca
       if (month.utilization.hoursAvailable > 0) {
         month.utilization.percentage = Math.round(
           (month.utilization.hoursWorked / month.utilization.hoursAvailable) * 100
@@ -109,8 +131,8 @@ export default class ReportAdapter {
     }));
   }
   
-  #daily(daysObject, metric) {
-    return Object.values(daysObject).map(day => ({
+  #daily(daysArray, metric) {
+    return daysArray.map(day => ({
       x: `${day.day}`,
       y: this.#extractDayMetric(day, metric)
     }));
@@ -185,16 +207,6 @@ export default class ReportAdapter {
       }
     });
     
-    const hours = availableTherapists * 13;
-    if (dateStr === '2025-12-30') {
-      console.log('DEBUG 30 grudnia:', {
-        therapists: therapists.length,
-        availableTherapists,
-        hoursAvailable: hours,
-        daysOffMap
-      });
-    }
-    
-    return hours;
+    return availableTherapists * 13;
   }
 }
