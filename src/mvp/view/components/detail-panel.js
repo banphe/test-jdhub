@@ -40,7 +40,17 @@ export default class DetailPanel extends HTMLElement {
         const price = data.price - (data.voucherAmount || 0);
         const voucher = data.voucherAmount > 0 ? ` (-${data.voucherAmount})` : '';
         
-        const therapist = data.services?.length === 1 ? data.services[0].therapist : '';
+        // Services: jeden terapeuta inline, wielu jako lista
+        const services = data.services || [];
+        const servicesHtml = services.length === 1
+            ? `<div class="flex items-center gap-1.5 mt-0.5">
+                <i class="fa-solid fa-user-nurse text-xs"></i>
+                <span>${services[0].therapist}</span>
+            </div>`
+            : services.map(s => `<div class="flex items-center gap-1.5 mt-0.5 text-xs border-t border-gray-200 pt-1">
+                <i class="fa-solid fa-user-nurse"></i>
+                <span>${s.treatment} — ${s.therapist}</span>
+            </div>`).join('');
         
         this.querySelector('#panel-content').innerHTML = `
             <div class="font-semibold">${data.title}</div>
@@ -57,10 +67,7 @@ export default class DetailPanel extends HTMLElement {
                 <i class="fa-solid fa-tag text-xs"></i>
                 <span>${price} zł${voucher}</span>
             </div>
-            ${therapist ? `<div class="flex items-center gap-1.5 mt-0.5">
-                <i class="fa-solid fa-user-nurse text-xs"></i>
-                <span>${therapist}</span>
-            </div>` : ''}
+            ${servicesHtml}
         `;
     }
     
