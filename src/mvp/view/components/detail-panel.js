@@ -12,10 +12,8 @@ export default class DetailPanel extends HTMLElement {
         if (!this.rendered) {
             this.className = 'h-0 overflow-hidden transition-all duration-300 bg-gray-100 border-t';
             this.innerHTML = `
-                <div class="p-4 h-full">
-                    <div class="flex justify-end mb-1">
-                        <button id="close-panel" class="text-gray-500 hover:text-gray-700 text-2xl leading-none">&times;</button>
-                    </div>
+                <div class="p-4 h-full relative">
+                    <button id="close-panel" class="absolute top-2 right-2 text-gray-500 hover:text-gray-700 text-2xl leading-none">&times;</button>
                     <div id="panel-content"></div>
                 </div>
             `;
