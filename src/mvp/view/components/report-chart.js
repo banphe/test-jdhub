@@ -8,7 +8,7 @@ export default class ReportChart extends HTMLElement {
     this.chart = null;
     this.rendered = false;
     
-    // Domyślna konfiguracja (to co zawsze powtarzamy)
+    // Domyślna konfiguracja
     this.defaults = {
       chart: {
         type: 'bar',
@@ -19,32 +19,28 @@ export default class ReportChart extends HTMLElement {
       plotOptions: {
         bar: {
           horizontal: true,
-          borderRadius: 4
+          borderRadius: 4,
+          dataLabels: {
+            position: 'top'
+          }
         }
       },
       dataLabels: {
         enabled: true,
-        style: { fontSize: '11px', fontWeight: 'bold' },
+        style: { 
+          fontSize: '11px', 
+          fontWeight: 'bold',
+          colors: ['#333333']
+        },
+        offsetX: 5,
         textAnchor: 'start',
-        formatter: function(val, opts) {
-          const series = opts.w.globals.series[opts.seriesIndex];
-          const value = series[opts.dataPointIndex];
-          const max = Math.max(...series);
-          const isLong = max > 0 && (value / max) > 0.15;
-          
-          // Przechowaj decyzję o stylu
-          opts.w.globals.__labelStyle = opts.w.globals.__labelStyle || {};
-          opts.w.globals.__labelStyle[opts.dataPointIndex] = isLong ? '#fff' : '#333';
-          
-          return val;
-        }
+        background: { enabled: false }
       },
       legend: { show: false }
     };
   }
 
   connectedCallback() {
-    // Renderuj tylko raz.
     if (!this.rendered) {
       this.className = 'flex-1 min-h-0 p-2 overflow-hidden';
       this.innerHTML = `
@@ -59,18 +55,16 @@ export default class ReportChart extends HTMLElement {
    * Renderuje wykres z podanymi danymi.
    * @param {Object} options - Opcje wykresu
    * @param {Array} options.data - Dane [{x: 'Label', y: wartość}, ...]
-   * @param {number} options.height - Wysokość wykresu (opcjonalna, domyślnie auto z rodzica)
+   * @param {number} options.height - Wysokość wykresu
    * @param {Function} options.labelFormatter - Formatter etykiet na słupkach
    * @param {Function} options.axisFormatter - Formatter wartości osi X
    * @param {string} options.label - Nazwa aktualnej metryki
    */
   render({ data, height = null, labelFormatter = null, axisFormatter = null, label = '' }) {
-    // Zniszcz poprzedni wykres jeśli istnieje
     if (this.chart) {
       this.chart.destroy();
     }
 
-    // Aktualizuj label metryki
     const labelEl = this.querySelector('#metric-label');
     if (labelEl) labelEl.textContent = label;
 
@@ -87,24 +81,14 @@ export default class ReportChart extends HTMLElement {
             height: computedHeight,
             width: '100%'
           },
-          series: [{ data }]
-        };
-
-        // Formatter dla etykiet na słupkach z dynamicznym kolorem
-        if (labelFormatter) {
-          const originalFormatter = this.defaults.dataLabels.formatter;
-          config.dataLabels = {
+          series: [{ data }],
+          dataLabels: {
             ...this.defaults.dataLabels,
-            formatter: function(val, opts) {
-              originalFormatter(val, opts);
-              return labelFormatter(val);
-            }
-          };
-        }
-        
-        // Formatter dla osi X (może być skrócony)
-        config.xaxis = {
-          labels: { formatter: axisFormatter || labelFormatter }
+            formatter: labelFormatter || ((val) => val)
+          },
+          xaxis: {
+            labels: { formatter: axisFormatter || labelFormatter }
+          }
         };
 
         this.chart = new ApexCharts(container, config);
