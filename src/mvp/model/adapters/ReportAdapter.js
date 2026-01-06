@@ -52,10 +52,12 @@ export default class ReportAdapter {
       // Oblicz netto po voucherach
       const net = (booking.price || 0) - (booking.voucherAmount || 0);
       
+      // Oblicz duration z różnicy end-start (w godzinach)
+      const duration = (new Date(booking.end) - new Date(booking.start)) / (1000 * 60 * 60);
+      
       // Oblicz godziny - każda masażystka w services osobno
-      const duration = booking.duration || 60;
       const services = booking.services || [];
-      const therapistHours = services.length * (duration / 60);
+      const therapistHours = services.length * duration;
       
       dayData.net += net;
       dayData.count += 1;
@@ -112,11 +114,11 @@ export default class ReportAdapter {
   #extractDayMetric(day, metric) {
     switch (metric) {
       case 'revenue':
-        return day.net;
+        return Math.round(day.net);
       case 'utilization':
         return day.utilization.percentage;
       case 'hours':
-        return day.utilization.hoursWorked;
+        return parseFloat(day.utilization.hoursWorked.toFixed(1));
       case 'zlh':
         return day.utilization.hoursWorked > 0 
           ? Math.round(day.net / day.utilization.hoursWorked) 
@@ -129,11 +131,11 @@ export default class ReportAdapter {
   #extractMonthMetric(month, metric) {
     switch (metric) {
       case 'revenue':
-        return month.totalNet;
+        return Math.round(month.totalNet);
       case 'utilization':
         return month.utilization.percentage;
       case 'hours':
-        return month.utilization.hoursWorked;
+        return parseFloat(month.utilization.hoursWorked.toFixed(1));
       case 'zlh':
         return month.utilization.hoursWorked > 0 
           ? Math.round(month.totalNet / month.utilization.hoursWorked) 
