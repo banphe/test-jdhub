@@ -35,36 +35,74 @@ export default class ReportRepository {
   }
   
   /**
-   * Pobiera dane z Firebase Firestore.
-   * 
-   * Zakłada że w Firestore istnieją kolekcje:
-   * - bookings (rezerwacje z cenami i datami)
-   * - therapists (masażystki z godzinami pracy)
-   * 
-   * TODO: Po stronie backendu trzeba będzie agregować te dane do formatu
-   * identycznego jak mock (miesięczne podsumowania z utilization).
+   * Pobiera dane z Firebase Firestore i agreguje do formatu raportowego.
    */
   static async #getFromFirebase() {
     try {
-      // Pobierz wszystkie rezerwacje
       const bookingsSnapshot = await getDocs(collection(db, COLLECTIONS.BOOKINGS));
       const bookings = bookingsSnapshot.docs.map(doc => ({ 
         id: doc.id, 
         ...doc.data() 
       }));
       
-      // Pobierz masażystki (do obliczania utilization)
-      const therapistsSnapshot = await getDocs(collection(db, COLLECTIONS.THERAPISTS));
-      const therapists = therapistsSnapshot.docs.map(doc => ({ 
-        id: doc.id, 
-        ...doc.data() 
-      }));
+      // Grupuj rezerwacje po miesiącach YYYY-MM
+      const monthsMap = {};
       
-      // TODO: Implementacja agregacji danych na format miesięczny
-      // Na razie zwracam pusty obiekt - trzeba będzie zaimplementować
-      // logikę agregacji identyczną jak w starej wersji (ReportAggregator)
-      console.warn('ReportRepository.#getFromFirebase() - not implemented yet');
-      return [];
+      bookings.forEach(booking => {
+        if (!booking.start) return;
+        
+        const date = new Date(booking.start);
+        const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+        const day = date.getDate();
+        
+        if (!monthsMap[monthKey]) {
+          monthsMap[monthKey] = {
+            key: monthKey,
+            monthName: date.toLocaleDateString('pl-PL', { month: 'long' }),
+            year: date.getFullYear(),
+            days: {},
+            totalNet: 0,
+            totalCount: 0,
+            utilization: { hoursWorked: 0, hoursAvailable: 0, percentage: 0 }
+          };
+        }
+        
+        if (!monthsMap[monthKey].days[day]) {
+          monthsMap[monthKey].days[day] = {
+            day,
+            net: 0,
+            count: 0,
+            utilization: { hoursWorked: 0, hoursAvailable: 30, percentage: 0 }
+          };
+        }
+        
+        const dayData = monthsMap[monthKey].days[day];
+        const duration = booking.duration || 60;
+        const hours = duration / 60;
+        
+        dayData.net += booking.price || 0;
+        dayData.count += 1;
+        dayData.utilization.hoursWorked += hours;
+        dayData.utilization.percentage = Math.round(
+          (dayData.utilization.hoursWorked / dayData.utilization.hoursAvailable) * 100
+        );
+        
+        monthsMap[monthKey].totalNet += booking.price || 0;
+        monthsMap[monthKey].totalCount += 1;
+        monthsMap[monthKey].utilization.hoursWorked += hours;
+      });
+      
+      // Oblicz percentage dla miesięcy
+      Object.values(monthsMap).forEach(month => {
+        const daysCount = Object.keys(month.days).length;
+        month.utilization.hoursAvailable = daysCount * 30;
+        month.utilization.percentage = Math.round(
+          (month.utilization.hoursWorked / month.utilization.hoursAvailable) * 100
+        );
+      });
+      
+      // Zwróć tablicę posortowaną chronologicznie
+      return Object.values(monthsMap).sort((a, b) => a.key.localeCompare(b.key));
       
     } catch (error) {
       console.error('Error fetching report data from Firebase:', error);
