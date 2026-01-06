@@ -10,10 +10,10 @@ export default class DetailPanel extends HTMLElement {
     
     connectedCallback() {
         if (!this.rendered) {
-            this.className = 'h-0 overflow-hidden transition-all duration-300 bg-gray-100 border-t';
+            this.className = 'h-0 overflow-hidden bg-gray-100 border-t';
             this.innerHTML = `
-                <div class="p-4 h-full relative">
-                    <button id="close-panel" class="absolute top-2 right-2 text-gray-500 hover:text-gray-700 text-2xl leading-none">&times;</button>
+                <div class="relative">
+                    <button id="close-panel" class="absolute top-0 right-0 text-gray-500 hover:text-gray-700 text-2xl leading-none z-10">&times;</button>
                     <div id="panel-content"></div>
                 </div>
             `;
@@ -27,7 +27,7 @@ export default class DetailPanel extends HTMLElement {
     }
     
     show(data) {
-        this.className = 'max-h-40 overflow-y-auto bg-gray-100 border-t';
+        this.className = 'p-4 max-h-48 overflow-y-auto bg-gray-100 border-t';
         
         const statusColors = {
             confirmed: 'bg-green-500',
