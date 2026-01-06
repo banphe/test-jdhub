@@ -14,6 +14,9 @@ export default class ReportAdapter {
     const monthsMap = {};
     const daysOffMap = this.#buildDaysOffMap(therapists);
     
+    console.log('DEBUG: Therapists count:', therapists.length);
+    console.log('DEBUG: Therapists:', therapists);
+    
     // Filtruj anulowane i nieobecności
     const validBookings = bookings.filter(b => 
       b.status !== BOOKING_STATUS.CANCELLED && 
@@ -184,6 +187,16 @@ export default class ReportAdapter {
       }
     });
     
-    return availableTherapists * 13;
+    const hours = availableTherapists * 13;
+    if (dateStr === '2025-12-30') {
+      console.log('DEBUG 30 grudnia:', {
+        therapists: therapists.length,
+        availableTherapists,
+        hoursAvailable: hours,
+        daysOffMap
+      });
+    }
+    
+    return hours;
   }
 }
