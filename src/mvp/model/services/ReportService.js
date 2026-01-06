@@ -1,15 +1,20 @@
 import ReportRepository from '../repositories/ReportRepository.js';
+import ReportAdapter from '../adapters/ReportAdapter.js';
 
 /**
  * Service do obsługi danych raportowych.
- * Warstwa abstrakcji - Presenter nie wie SKĄD pochodzą dane.
+ * Orkiestruje pobieranie danych (Repository) i transformację (Adapter).
  * 
- * Service używa Repository - źródło danych (mock/Firebase) 
- * kontrolowane jest w ReportRepository przez flagę USE_MOCK.
+ * Przepływ: Repository (surowe bookings) → Adapter (agregacja) → Presenter
  */
 export default class ReportService {
   
+  constructor() {
+    this.adapter = new ReportAdapter();
+  }
+  
   async getReportData() {
-    return await ReportRepository.getReportData();
+    const bookings = await ReportRepository.getBookings();
+    return this.adapter.aggregateToMonthly(bookings);
   }
 }
