@@ -1,3 +1,5 @@
+import { BOOKING_STATUS } from '../../config/constants.js';
+
 /**
  * Transformuje dane raportowe na formaty UI.
  * Agreguje surowe bookings do struktury miesięcznej oraz formatuje do wykresów.
@@ -11,7 +13,13 @@ export default class ReportAdapter {
   aggregateToMonthly(bookings) {
     const monthsMap = {};
     
-    bookings.forEach(booking => {
+    // Filtruj anulowane i nieobecności
+    const validBookings = bookings.filter(b => 
+      b.status !== BOOKING_STATUS.CANCELLED && 
+      b.status !== BOOKING_STATUS.NOSHOW
+    );
+    
+    validBookings.forEach(booking => {
       if (!booking.start) return;
       
       const date = new Date(booking.start);
@@ -40,19 +48,25 @@ export default class ReportAdapter {
       }
       
       const dayData = monthsMap[monthKey].days[day];
-      const duration = booking.duration || 60;
-      const hours = duration / 60;
       
-      dayData.net += booking.price || 0;
+      // Oblicz netto po voucherach
+      const net = (booking.price || 0) - (booking.voucherAmount || 0);
+      
+      // Oblicz godziny - każda masażystka w services osobno
+      const duration = booking.duration || 60;
+      const services = booking.services || [];
+      const therapistHours = services.length * (duration / 60);
+      
+      dayData.net += net;
       dayData.count += 1;
-      dayData.utilization.hoursWorked += hours;
+      dayData.utilization.hoursWorked += therapistHours;
       dayData.utilization.percentage = Math.round(
         (dayData.utilization.hoursWorked / dayData.utilization.hoursAvailable) * 100
       );
       
-      monthsMap[monthKey].totalNet += booking.price || 0;
+      monthsMap[monthKey].totalNet += net;
       monthsMap[monthKey].totalCount += 1;
-      monthsMap[monthKey].utilization.hoursWorked += hours;
+      monthsMap[monthKey].utilization.hoursWorked += therapistHours;
     });
     
     // Oblicz percentage dla miesięcy
