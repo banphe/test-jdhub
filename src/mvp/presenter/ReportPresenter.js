@@ -23,7 +23,7 @@ export default class ReportPresenter {
 
   async init() {
     if (!this.data) {
-      this.data = this.service.getReportData();
+      this.data = await this.service.getReportData();
       this.selectedMonth = this.data[this.data.length - 1];
       this.view.setupToolbar(this.adapter.forDropdown(this.data), this.selectedMonth.key);
     }

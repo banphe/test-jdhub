@@ -13,17 +13,17 @@ export class CalendarPresenter {
     }
     
     // Wywoływane przez View po zamontowaniu.
-    init() {
-        this.loadData();
+    async init() {
+        await this.loadData();
         this.renderCalendar();
     }
     
-    loadData() {
+    async loadData() {
         if (this.rooms) return; // Już załadowane.
         
-        this.rooms = this.service.getRooms();
-        this.customers = this.service.getCustomers();
-        this.bookings = this.service.getBookings();
+        this.rooms = await this.service.getRooms();
+        this.customers = await this.service.getCustomers();
+        this.bookings = await this.service.getBookings();
     }
     
     renderCalendar() {
