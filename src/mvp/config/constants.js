@@ -8,6 +8,7 @@ export const COLLECTIONS = {
   CUSTOMERS: 'customers',
   ROOMS: 'rooms',
   THERAPISTS: 'therapists',
+  THERAPIST_DAYS_OFF: 'therapistDaysOff',
   MENU: 'menu'
 };
 

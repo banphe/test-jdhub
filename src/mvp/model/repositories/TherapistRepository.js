@@ -21,12 +21,33 @@ export default class TherapistRepository {
     }
   }
   
+  /**
+   * Pobiera dni wolne terapeutów z osobnej kolekcji.
+   */
+  static async getAllDaysOff() {
+    if (this.USE_MOCK) {
+      return [];
+    } else {
+      return await this.#getDaysOffFromFirebase();
+    }
+  }
+  
   static async #getFromFirebase() {
     try {
       const snapshot = await getDocs(collection(db, COLLECTIONS.THERAPISTS));
       return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     } catch (error) {
       console.error('Error fetching therapists from Firebase:', error);
+      throw error;
+    }
+  }
+  
+  static async #getDaysOffFromFirebase() {
+    try {
+      const snapshot = await getDocs(collection(db, COLLECTIONS.THERAPIST_DAYS_OFF));
+      return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    } catch (error) {
+      console.error('Error fetching therapist days off from Firebase:', error);
       throw error;
     }
   }

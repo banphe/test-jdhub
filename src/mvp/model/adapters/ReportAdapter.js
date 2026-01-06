@@ -10,12 +10,13 @@ export default class ReportAdapter {
    * Agreguje surowe bookings do struktury miesięcznej.
    * Zwraca format: [{ key, monthName, year, days: {}, totalNet, totalCount, utilization }]
    */
-  aggregateToMonthly(bookings, therapists = []) {
+  aggregateToMonthly(bookings, therapists = [], therapistDaysOff = []) {
     const monthsMap = {};
-    const daysOffMap = this.#buildDaysOffMap(therapists);
+    const daysOffMap = this.#buildDaysOffMap(therapistDaysOff);
     
     console.log('DEBUG: Therapists count:', therapists.length);
     console.log('DEBUG: Therapists:', therapists);
+    console.log('DEBUG: Days off count:', therapistDaysOff.length);
     
     // Filtruj anulowane i nieobecności
     const validBookings = bookings.filter(b => 
@@ -160,14 +161,11 @@ export default class ReportAdapter {
    * Buduje mapę dni wolnych dla szybkiego dostępu O(1).
    * Klucz: "YYYY-MM-DD_TherapistName"
    */
-  #buildDaysOffMap(therapists) {
+  #buildDaysOffMap(therapistDaysOff) {
     const map = {};
-    therapists.forEach(therapist => {
-      const daysOff = therapist.daysOff || [];
-      daysOff.forEach(dateStr => {
-        const key = `${dateStr}_${therapist.name}`;
-        map[key] = true;
-      });
+    therapistDaysOff.forEach(dayOff => {
+      const key = `${dayOff.date}_${dayOff.therapist}`;
+      map[key] = true;
     });
     return map;
   }

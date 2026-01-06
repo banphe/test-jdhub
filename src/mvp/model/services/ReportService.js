@@ -15,10 +15,11 @@ export default class ReportService {
   }
   
   async getReportData() {
-    const [bookings, therapists] = await Promise.all([
+    const [bookings, therapists, therapistDaysOff] = await Promise.all([
       ReportRepository.getBookings(),
-      TherapistRepository.getAll()
+      TherapistRepository.getAll(),
+      TherapistRepository.getAllDaysOff()
     ]);
-    return this.adapter.aggregateToMonthly(bookings, therapists);
+    return this.adapter.aggregateToMonthly(bookings, therapists, therapistDaysOff);
   }
 }
