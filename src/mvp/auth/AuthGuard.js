@@ -77,8 +77,8 @@ function showLoginScreen() {
 function loadApp() {
   if (!window.appLoaded) {
     const timestamp = Date.now();
-    import(`../presenter/Router.js?v=${timestamp}`).then(module => {
-      new module.default();
+    import(`../../app.js?v=${timestamp}`).then(() => {
+      // app.js sam inicjalizuje wszystko
     });
     window.appLoaded = true;
   }
