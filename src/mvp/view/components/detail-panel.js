@@ -27,7 +27,7 @@ export default class DetailPanel extends HTMLElement {
     }
     
     show(data) {
-        this.className = 'h-auto max-h-40 overflow-y-auto transition-all duration-300 bg-gray-100 border-t';
+        this.className = 'max-h-40 overflow-y-auto bg-gray-100 border-t';
         
         const statusColors = {
             confirmed: 'bg-green-500',
@@ -97,7 +97,7 @@ export default class DetailPanel extends HTMLElement {
     }
     
     hide() {
-        this.className = 'h-0 overflow-hidden transition-all duration-300 bg-gray-100 border-t';
+        this.className = 'h-0 overflow-hidden bg-gray-100 border-t';
     }
 }
 
