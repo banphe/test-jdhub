@@ -66,9 +66,6 @@ export default class ReportAdapter {
       dayData.net += net;
       dayData.count += 1;
       dayData.utilization.hoursWorked += therapistHours;
-      dayData.utilization.percentage = Math.round(
-        (dayData.utilization.hoursWorked / dayData.utilization.hoursAvailable) * 100
-      );
       
       monthsMap[monthKey].totalNet += net;
       monthsMap[monthKey].totalCount += 1;
