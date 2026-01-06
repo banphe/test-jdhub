@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Thairapy</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar-scheduler@6.1.15/index.global.min.js'></script>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+</head>
+<body>
+    <script type="module">
+      import { theme } from './src/shared/config/theme.js';
+      document.body.className = `bg-${theme.colors.background} flex flex-col overflow-hidden`;
+      // 100dvh dla mobile (dynamic viewport), fallback 100vh
+      document.body.style.height = '100vh';
+      document.body.style.height = '100dvh';
+      // Safe area dla notch/system UI
+      document.body.style.paddingBottom = 'env(safe-area-inset-bottom, 0px)';
+    </script>
+    <script type="module" src="src/app.js"></script>
+</body>
+</html>
