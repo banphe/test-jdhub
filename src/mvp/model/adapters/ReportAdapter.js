@@ -10,7 +10,7 @@ export default class ReportAdapter {
   }
   
   forDropdown(data) {
-    return [...data].reverse().map(month => ({
+    return [...data].map(month => ({
       key: month.key,
       label: `${month.monthName} ${month.year}`
     }));

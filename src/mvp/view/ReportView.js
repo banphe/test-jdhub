@@ -26,7 +26,7 @@ export default class ReportView {
     this.toolbar.setMonths(months, currentMonthKey);
   }
 
-  showChart(data, formatter) {
-    this.chart.render({ data, formatter });
+  showChart(data, labelFormatter, axisFormatter, metricLabel) {
+    this.chart.render({ data, labelFormatter, axisFormatter, label: metricLabel });
   }
 }

@@ -27,11 +27,11 @@ export class CalendarService {
                 customerId: 'customer-1',
                 start: `${today}T10:00:00`,
                 end: `${today}T11:30:00`,
-                menuItemName: 'Masaż tajski',
+                menuItemName: 'Tradycyjny masaż tajski',
                 price: 200,
                 addons: [],
                 voucherAmount: 0,
-                services: [{ treatment: 'Masaż tajski', therapist: 'Daisy' }],
+                services: [{ treatment: 'Tradycyjny masaż tajski', therapist: 'Daisy' }],
                 status: 'confirmed',
                 externalId: 'BOOKSY-101'
             },
@@ -41,11 +41,11 @@ export class CalendarService {
                 customerId: 'customer-2',
                 start: `${today}T14:00:00`,
                 end: `${today}T15:00:00`,
-                menuItemName: 'Masaż stóp',
+                menuItemName: 'Tajski masaż stóp i ramion',
                 price: 120,
                 addons: [],
                 voucherAmount: 0,
-                services: [{ treatment: 'Masaż stóp', therapist: 'Rose' }],
+                services: [{ treatment: 'Tajski masaż stóp i ramion', therapist: 'Rose' }],
                 status: 'confirmed',
                 externalId: 'BOOKSY-102'
             },
@@ -60,8 +60,8 @@ export class CalendarService {
                 addons: [],
                 voucherAmount: 0,
                 services: [
-                    { treatment: 'Masaż tajski', therapist: 'Daisy' },
-                    { treatment: 'Masaż tajski', therapist: 'Rose' }
+                    { treatment: 'Klasyczny masaż tajski', therapist: 'Daisy' },
+                    { treatment: 'Klasyczny masaż tajski', therapist: 'Rose' }
                 ],
                 status: 'confirmed',
                 externalId: 'BOOKSY-103'

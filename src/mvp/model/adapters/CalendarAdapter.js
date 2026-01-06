@@ -1,6 +1,21 @@
 // CalendarAdapter - konwertuje dane do formatu FullCalendar.
 
-const ROOM_COLORS = ['#3498db', '#e74c3c', '#2ecc71', '#f39c12'];
+const MASSAGE_COLORS = {
+    'Klasyczny masaż tajski': '#3498db',
+    'Masaż dla dwojga': '#9b59b6',
+    'Masaż gorącym olejkiem': '#e67e22',
+    'Masaż gorącymi kamieniami': '#e74c3c',
+    'Masaż olejkami aromatycznymi': '#1abc9c',
+    'Masaż pleców - Zdrowy kręgosłup': '#2ecc71',
+    'Masaż stemplami ziołowymi': '#f39c12',
+    'Tajski masaż olejkiem': '#16a085',
+    'Tajski masaż stóp i ramion': '#2980b9',
+    'Thairapy Deep Relax - masaż autorski': '#8e44ad',
+    'Tradycyjny masaż tajski': '#34495e'
+};
+
+const DEFAULT_COLOR = '#95a5a6';
+const NOSHOW_COLOR = '#bdc3c7';
 
 export class CalendarAdapter {
     
@@ -8,8 +23,7 @@ export class CalendarAdapter {
     toResource(room, index) {
         return {
             id: room.id,
-            title: room.name,
-            eventBackgroundColor: ROOM_COLORS[index % ROOM_COLORS.length]
+            title: room.name
         };
     }
     
@@ -23,10 +37,9 @@ export class CalendarAdapter {
             ? `${customer.firstName} ${customer.lastName}`.trim()
             : 'Szybka rezerwacja';
         
-        let backgroundColor = '';
-        if (booking.status === 'noshow') {
-            backgroundColor = '#95a5a6';
-        }
+        const backgroundColor = booking.status === 'noshow'
+            ? NOSHOW_COLOR
+            : (MASSAGE_COLORS[booking.menuItemName] || DEFAULT_COLOR);
         
         return {
             id: booking.id,

@@ -1,3 +1,9 @@
+const METRIC_LABELS = {
+  revenue: 'Przychód',
+  utilization: 'Obłożenie',
+  hours: 'Godziny',
+  zlh: 'zł/h'
+};
 
 export default class ReportPresenter {
   
@@ -57,6 +63,13 @@ export default class ReportPresenter {
     const chartData = this.adapter.forChart(
       this.selectedMode, this.data, this.selectedMonth, this.selectedMetric
     );
-    this.view.showChart(chartData, this.formatters.forMetric(this.selectedMetric));
+    
+    const labelFormatter = this.formatters.forMetric(this.selectedMetric);
+    const axisFormatter = (this.selectedMode === 'monthly' && this.selectedMetric === 'revenue')
+      ? this.formatters.currencyCompact.bind(this.formatters)
+      : labelFormatter;
+    const metricLabel = METRIC_LABELS[this.selectedMetric];
+    
+    this.view.showChart(chartData, labelFormatter, axisFormatter, metricLabel);
   }
 }

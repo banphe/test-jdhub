@@ -8,6 +8,11 @@ export default class Formatters {
     return `${val.toLocaleString('pl-PL')} zł`;
   }
   
+  currencyCompact(val) {
+    if (val >= 1000) return `${Math.round(val / 1000)}k`;
+    return `${val} zł`;
+  }
+  
   percent(val) {
     return `${val}%`;
   }
