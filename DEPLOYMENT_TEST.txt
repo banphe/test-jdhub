@@ -1,9 +1,0 @@
-GitHub Actions Deployment Test
-==============================
-
-This file was created to test automated deployment.
-
-If you see this file on the VPS at /var/www/test.jdhub.shop/DEPLOYMENT_TEST.txt
-then the GitHub Actions workflow is working correctly! 🚀
-
-Timestamp: 2026-01-06

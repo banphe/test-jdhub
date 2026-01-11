@@ -6,9 +6,11 @@ import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebas
 import { getFirestore } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 import { getAuth } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
 
+const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+
 const firebaseConfig = {
   apiKey: "AIzaSyDiyQRjNceQa7LMaHFhBMrpUMbqOdKJl18",
-  authDomain: "thairapy.jdhub.shop",
+  authDomain: isLocalhost ? "thairapy.firebaseapp.com" : "thairapy.jdhub.shop",
   projectId: "thairapy",
   storageBucket: "thairapy.firebasestorage.app",
   messagingSenderId: "799172483804",

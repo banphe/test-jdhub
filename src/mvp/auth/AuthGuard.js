@@ -23,9 +23,6 @@ getRedirectResult(auth).then((result) => {
   }
 }).catch((error) => {
   console.error('Redirect error:', error);
-  if (error.code === 'auth/unauthorized-domain') {
-    alert('Błąd: localhost nie jest autoryzowany w Firebase.\nDodaj 127.0.0.1:5500 do Authorized domains w Firebase Console.\nAlbo użyj test.jdhub.shop');
-  }
 });
 
 onAuthStateChanged(auth, (user) => {
@@ -62,14 +59,9 @@ function showLoginScreen() {
     });
     try {
       await signInWithRedirect(auth, provider);
-      // Po powrocie z Google onAuthStateChanged automatycznie się wykona
     } catch (error) {
       console.error('Login error:', error);
-      if (error.code === 'auth/unauthorized-domain') {
-        alert('Błąd: localhost nie jest autoryzowany w Firebase.\n\nMusisz dodać "127.0.0.1:5500" do Authorized domains w Firebase Console:\nhttps://console.firebase.google.com/project/thairapy/authentication/settings\n\nLub użyj test.jdhub.shop zamiast localhost.');
-      } else {
-        alert('Błąd logowania: ' + error.message);
-      }
+      alert('Błąd logowania: ' + error.message);
     }
   });
 }
