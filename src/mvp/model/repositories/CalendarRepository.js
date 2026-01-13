@@ -1,5 +1,5 @@
 import { db } from '../../config/firebase-init.js';
-import { collection, getDocs } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+import { collection, getDocs, addDoc, doc, setDoc, Timestamp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 import { COLLECTIONS } from '../../config/constants.js';
 import { generateMockRooms, generateMockCustomers, generateMockBookings } from '../../../shared/mocks/calendar-data.js';
 
@@ -76,6 +76,45 @@ export default class CalendarRepository {
       return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     } catch (error) {
       console.error('Error fetching bookings from Firebase:', error);
+      throw error;
+    }
+  }
+
+  // ==================== WRITE OPERATIONS ====================
+
+  /**
+   * Zapisuje nową rezerwację do Firebase.
+   * @param {Object} bookingData - Dane rezerwacji (format z parseBooksy)
+   * @returns {Promise<string>} - ID utworzonej rezerwacji
+   */
+  static async saveBooking(bookingData) {
+    try {
+      const bookingToSave = {
+        ...bookingData,
+        start: new Timestamp(bookingData.start._seconds, bookingData.start._nanoseconds),
+        end: new Timestamp(bookingData.end._seconds, bookingData.end._nanoseconds),
+        createdAt: new Timestamp(bookingData.createdAt._seconds, bookingData.createdAt._nanoseconds)
+      };
+
+      const docRef = await addDoc(collection(db, COLLECTIONS.BOOKINGS), bookingToSave);
+      return docRef.id;
+    } catch (error) {
+      console.error('Error saving booking to Firebase:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Zapisuje nowego klienta do Firebase.
+   * @param {string} customerId - ID klienta (numer telefonu znormalizowany)
+   * @param {Object} customerData - Dane klienta { firstName, lastName, createdAt }
+   * @returns {Promise<void>}
+   */
+  static async saveCustomer(customerId, customerData) {
+    try {
+      await setDoc(doc(db, COLLECTIONS.CUSTOMERS, customerId), customerData);
+    } catch (error) {
+      console.error('Error saving customer to Firebase:', error);
       throw error;
     }
   }

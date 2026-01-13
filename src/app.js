@@ -7,6 +7,7 @@ import { CalendarView } from './mvp/view/CalendarView.js';
 import ReportView from './mvp/view/ReportView.js';
 import ReportService from './mvp/model/services/ReportService.js';
 import { CalendarService } from './mvp/model/services/CalendarService.js';
+import BookingUploadService from './mvp/model/services/BookingUploadService.js';
 import ReportAdapter from './mvp/model/adapters/ReportAdapter.js';
 import { CalendarAdapter } from './mvp/model/adapters/CalendarAdapter.js';
 import Formatters from './mvp/model/utils/Formatters.js';
@@ -16,8 +17,9 @@ const appContainer = new AppContainer();
 // Calendar MVP
 const calendarService = new CalendarService();
 const calendarAdapter = new CalendarAdapter();
+const calendarUploadService = new BookingUploadService();
 const calendarView = new CalendarView();
-const calendarPresenter = new CalendarPresenter(calendarView, calendarService, calendarAdapter);
+const calendarPresenter = new CalendarPresenter(calendarView, calendarService, calendarAdapter, calendarUploadService);
 
 function onCalendarRendered() {
     calendarPresenter.init();
@@ -28,6 +30,21 @@ function onCalendarEventClicked(event) {
     calendarPresenter.handleEventClick(event);
 }
 calendarView.onEventClicked = onCalendarEventClicked;
+
+function onFabClicked() {
+    calendarPresenter.handleFabClick();
+}
+calendarView.onFabClicked = onFabClicked;
+
+function onParseRequested(imageDataUrl) {
+    calendarPresenter.handleParseRequest(imageDataUrl);
+}
+calendarView.onParseRequested = onParseRequested;
+
+function onSaveRequested(data) {
+    calendarPresenter.handleSaveRequest(data);
+}
+calendarView.onSaveRequested = onSaveRequested;
 
 // Report MVP
 const reportService = new ReportService();

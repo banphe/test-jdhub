@@ -1,12 +1,13 @@
 // CalendarPresenter - łączy CalendarService, CalendarAdapter i CalendarView.
 
 export class CalendarPresenter {
-    
-    constructor(view, service, adapter) {
+
+    constructor(view, service, adapter, uploadService) {
         this.view = view;
         this.service = service;
         this.adapter = adapter;
-        
+        this.uploadService = uploadService;
+
         this.rooms = null;
         this.customers = null;
         this.bookings = null;
@@ -47,5 +48,44 @@ export class CalendarPresenter {
             status: event.extendedProps.status
         };
         this.view.showDetailPanel(data);
+    }
+
+    handleFabClick() {
+        this.view.openUploadModal();
+    }
+
+    async handleParseRequest(imageDataUrl) {
+        this.view.showUploadLoading();
+
+        const result = await this.uploadService.parseScreenshot(imageDataUrl);
+
+        if (result.success) {
+            this.view.showUploadPreview(result.data);
+        } else {
+            this.view.showUploadError(result.message);
+        }
+    }
+
+    async handleSaveRequest(parsedData) {
+        try {
+            const booking = parsedData.booking;
+            const customer = parsedData.customer;
+
+            if (customer.isNew && customer.customerId) {
+                await this.service.saveCustomer(customer.customerId, customer.data);
+            }
+
+            await this.service.saveBooking(booking);
+
+            this.view.closeUploadModal();
+
+            this.bookings = null;
+            this.customers = null;
+            await this.loadData();
+            this.renderCalendar();
+        } catch (error) {
+            console.error('Error saving booking:', error);
+            this.view.showUploadError('Błąd podczas zapisywania rezerwacji');
+        }
     }
 }
