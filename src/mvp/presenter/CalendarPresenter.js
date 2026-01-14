@@ -60,6 +60,8 @@ export class CalendarPresenter {
         const result = await this.uploadService.parseScreenshot(imageDataUrl);
 
         if (result.success) {
+            const room = this.rooms.find(r => r.id === result.data.booking.roomId);
+            result.data.booking.roomName = room ? room.name : 'Nieznany';
             this.view.showUploadPreview(result.data);
         } else {
             this.view.showUploadError(result.message);
@@ -75,10 +77,27 @@ export class CalendarPresenter {
                 await this.service.saveCustomer(customer.customerId, customer.data);
             }
 
-            await this.service.saveBooking(booking);
+            const bookingToSave = {
+                start: booking.start,
+                end: booking.end,
+                menuItemName: booking.menuItemName,
+                services: booking.services,
+                price: booking.price,
+                voucherAmount: booking.voucherAmount,
+                status: booking.status,
+                roomId: booking.roomId,
+                createdAt: booking.createdAt
+            };
 
-            this.view.closeUploadModal();
+            if (customer.customerId) {
+                bookingToSave.customerPhone = customer.customerId;
+            }
 
+            const bookingId = await this.service.saveBooking(bookingToSave);
+
+            this.view.showUploadSuccess(bookingId);
+
+            this.rooms = null;
             this.bookings = null;
             this.customers = null;
             await this.loadData();

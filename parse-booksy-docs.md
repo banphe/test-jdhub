@@ -45,14 +45,8 @@ Funkcja `parseBooksy` parsuje zrzuty ekranu z aplikacji mobilnej Booksy i zwraca
   "success": true,
   "data": {
     "booking": {
-      "start": {
-        "_seconds": 1733689800,
-        "_nanoseconds": 0
-      },
-      "end": {
-        "_seconds": 1733695200,
-        "_nanoseconds": 0
-      },
+      "start": "2024-12-08T19:30:00+01:00",
+      "end": "2024-12-08T21:00:00+01:00",
       "menuItemName": "Thairapy Deep Relax - masaż autorski",
       "services": [
         {
@@ -64,12 +58,7 @@ Funkcja `parseBooksy` parsuje zrzuty ekranu z aplikacji mobilnej Booksy i zwraca
       "voucherAmount": 0,
       "status": "confirmed",
       "roomId": "lvB1qNXaCvHolapBglFT",
-      "roomName": "Mały",
-      "allocationReason": "default",
-      "createdAt": {
-        "_seconds": 1768325785,
-        "_nanoseconds": 456000000
-      }
+      "createdAt": "2025-01-14T12:29:45.456Z"
     },
     "customer": {
       "customerId": "501819504",
@@ -89,19 +78,17 @@ Funkcja `parseBooksy` parsuje zrzuty ekranu z aplikacji mobilnej Booksy i zwraca
 
 | Pole | Typ | Opis |
 |------|-----|------|
-| start | Timestamp | Data i czas rozpoczęcia wizyty (Firestore Timestamp) |
-| end | Timestamp | Data i czas zakończenia wizyty (Firestore Timestamp) |
+| start | string | Data i czas rozpoczęcia wizyty (ISO 8601 z timezone) |
+| end | string | Data i czas zakończenia wizyty (ISO 8601 z timezone) |
 | menuItemName | string | Nazwa usługi z menu |
 | services | array | Tablica zabiegów z przypisanymi terapeutami |
 | services[].treatment | string | Nazwa zabiegu |
-| services[].therapist | string | Imię terapeuty (Daisy, Kara, Emma, Cream) |
+| services[].therapist | string | Imię terapeuty |
 | price | number | Cena zabiegu w złotych |
 | voucherAmount | number | Wartość użytego vouchera/rabatu w złotych (0 jeśli brak) |
-| status | string | Status rezerwacji: `"confirmed"` lub `"noshow"` |
+| status | string | Status rezerwacji |
 | roomId | string | ID pokoju z Firestore |
-| roomName | string | Nazwa pokoju: `"Mały"` lub `"Duży"` |
-| allocationReason | string | Powód przydziału pokoju: `"default"`, `"couples_massage"`, `"fallback_small_occupied"` |
-| createdAt | Timestamp | Timestamp utworzenia rekordu |
+| createdAt | string | Data utworzenia rekordu (ISO 8601) |
 
 ### Struktura danych: `customer`
 
@@ -112,7 +99,7 @@ Funkcja `parseBooksy` parsuje zrzuty ekranu z aplikacji mobilnej Booksy i zwraca
 | data | object\|null | Dane klienta lub `null` dla szybkiej rezerwacji |
 | data.firstName | string | Imię klienta |
 | data.lastName | string | Nazwisko klienta |
-| data.createdAt | string\|Timestamp | Data utworzenia klienta w bazie |
+| data.createdAt | string | Data utworzenia klienta w bazie (ISO 8601) |
 
 ### Struktura danych: `warnings`
 
@@ -257,67 +244,16 @@ Występuje gdy:
 
 ---
 
-## Firestore Timestamp
+## Format dat ISO 8601
 
-Pola typu Firestore Timestamp mają format:
+Wszystkie daty są w formacie ISO 8601 ze strefą czasową:
 ```json
-{
-  "_seconds": 1733689800,
-  "_nanoseconds": 0
-}
+"start": "2024-12-08T19:30:00+01:00",
+"createdAt": "2025-01-14T12:29:45.456Z"
 ```
 
-Frontend może je bezpośrednio zapisać do Firestore lub przekonwertować używając Firebase SDK:
+Frontend może je bezpośrednio zapisać do Firestore jako stringi lub przekonwertować:
 ```javascript
-import { Timestamp } from 'firebase/firestore';
-
-const timestamp = new Timestamp(data._seconds, data._nanoseconds);
+const date = new Date("2024-12-08T19:30:00+01:00");
 ```
 
----
-
-## Uwagi implementacyjne
-
-1. **Funkcja NIE zapisuje do bazy** - tylko zwraca dane
-2. **Frontend jest odpowiedzialny za:**
-   - Zapis do kolekcji `bookings`
-   - Zapis nowego klienta do kolekcji `customers` (jeśli `isNew: true`)
-   - Obsługę konfliktów pokoi
-   - Obsługę duplikatów
-   - Obsługę wyboru terapeutek dla masażu dla dwojga
-3. **Alokacja pokoi jest sugestią** - frontend może ją zmienić
-4. **Status 409 (konflikt pokoi) nie blokuje** - to informacja, frontend decyduje
-
----
-
-## Dozwolone wartości
-
-### Usługi (menuItemName)
-
-- Thairapy Deep Relax - masaż autorski
-- Tajski masaż olejkiem
-- Tradycyjny masaż tajski
-- Tajski masaż stóp i ramion
-- Masaż pleców - Zdrowy kręgosłup
-- Masaż olejkami aromatycznymi
-- Masaż gorącym olejkiem
-- Masaż gorącymi kamieniami
-- Masaż stemplami ziołowymi
-- Masaż dla dwojga
-
-### Terapeuci (services[].therapist)
-
-- Daisy
-- Kara
-- Emma
-- Cream
-
-### Statusy (status)
-
-- `confirmed` - wizyta potwierdzona/zakończona
-- `noshow` - klient się nie stawił
-
-### Pokoje (roomName)
-
-- `Mały` - jeden stół, masaże indywidualne
-- `Duży` - dwa stoły, masaż dla par

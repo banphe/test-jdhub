@@ -29,8 +29,8 @@ export class CalendarAdapter {
     
     // Konwertuje rezerwację na event FullCalendar.
     toEvent(booking, customers) {
-        const customer = booking.customerId
-            ? customers.find(c => c.id === booking.customerId)
+        const customer = booking.customerPhone
+            ? customers.find(c => c.id === booking.customerPhone)
             : null;
         
         const customerName = customer

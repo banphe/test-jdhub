@@ -67,6 +67,12 @@ export default class UploadModal extends HTMLElement {
     this.renderContent();
   }
 
+  showSuccess(bookingId) {
+    this.currentState = 'success';
+    this.bookingId = bookingId;
+    this.renderContent();
+  }
+
   renderContent() {
     const content = this.querySelector('#modal-content');
 
@@ -137,8 +143,8 @@ export default class UploadModal extends HTMLElement {
       const booking = data.booking;
       const customer = data.customer;
 
-      const startDate = new Date(booking.start._seconds * 1000);
-      const endDate = new Date(booking.end._seconds * 1000);
+      const startDate = new Date(booking.start);
+      const endDate = new Date(booking.end);
       const dateStr = startDate.toLocaleDateString('pl-PL', { day: '2-digit', month: '2-digit', year: 'numeric' });
       const timeStr = `${startDate.toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' })} - ${endDate.toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' })}`;
 
@@ -229,6 +235,23 @@ export default class UploadModal extends HTMLElement {
       content.querySelector('#retry-btn').addEventListener('click', () => {
         this.currentState = 'selecting';
         this.renderContent();
+      });
+    }
+
+    if (this.currentState === 'success') {
+      content.innerHTML = `
+        <div class="bg-green-50 border border-green-200 rounded-lg p-6 text-center">
+          <i class="fas fa-check-circle text-5xl text-green-500 mb-4"></i>
+          <p class="text-green-800 font-semibold mb-2">Rezerwacja zapisana</p>
+          <p class="text-green-700 text-sm mb-4">ID: ${this.bookingId}</p>
+          <button id="close-success-btn" class="bg-green-500 hover:bg-green-600 text-white py-2 px-6 rounded-lg">
+            Zamknij
+          </button>
+        </div>
+      `;
+
+      content.querySelector('#close-success-btn').addEventListener('click', () => {
+        this.close();
       });
     }
   }

@@ -1,5 +1,5 @@
 import { db } from '../../config/firebase-init.js';
-import { collection, getDocs, addDoc, doc, setDoc, Timestamp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+import { collection, getDocs, addDoc, doc, setDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 import { COLLECTIONS } from '../../config/constants.js';
 import { generateMockRooms, generateMockCustomers, generateMockBookings } from '../../../shared/mocks/calendar-data.js';
 
@@ -89,14 +89,7 @@ export default class CalendarRepository {
    */
   static async saveBooking(bookingData) {
     try {
-      const bookingToSave = {
-        ...bookingData,
-        start: new Timestamp(bookingData.start._seconds, bookingData.start._nanoseconds),
-        end: new Timestamp(bookingData.end._seconds, bookingData.end._nanoseconds),
-        createdAt: new Timestamp(bookingData.createdAt._seconds, bookingData.createdAt._nanoseconds)
-      };
-
-      const docRef = await addDoc(collection(db, COLLECTIONS.BOOKINGS), bookingToSave);
+      const docRef = await addDoc(collection(db, COLLECTIONS.BOOKINGS), bookingData);
       return docRef.id;
     } catch (error) {
       console.error('Error saving booking to Firebase:', error);

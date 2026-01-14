@@ -90,4 +90,8 @@ export class CalendarView {
     showUploadError(message) {
         this.uploadModal.showError(message);
     }
+
+    showUploadSuccess(bookingId) {
+        this.uploadModal.showSuccess(bookingId);
+    }
 }
