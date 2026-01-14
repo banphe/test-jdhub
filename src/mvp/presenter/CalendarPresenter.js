@@ -62,6 +62,7 @@ export class CalendarPresenter {
         if (result.success) {
             const room = this.rooms.find(r => r.id === result.data.booking.roomId);
             result.data.booking.roomName = room ? room.name : 'Nieznany';
+            result.data.warnings = result.warnings;
             this.view.showUploadPreview(result.data);
         } else {
             this.view.showUploadError(result.message);
