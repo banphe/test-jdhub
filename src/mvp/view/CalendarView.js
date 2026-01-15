@@ -43,10 +43,10 @@ export class CalendarView {
         this.onRendered();
     }
 
-    attaif (this.listenersAttached) return;
+    attachUploadListeners() {
+        if (this.listenersAttached) return;
         this.listenersAttached = true;
 
-        chUploadListeners() {
         this.fab.addEventListener('fab-clicked', () => {
             if (this.onFabClicked) this.onFabClicked();
         });
