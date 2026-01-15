@@ -38,42 +38,32 @@ export default class UploadModalV2 extends HTMLElement {
         this.close();
       });
 
-      this.attachEventDelegation();
+      this.attachInternalHandlers();
       this.rendered = true;
     }
   }
 
-  attachEventDelegation() {
-    this.addEventListener('parse-requested', (e) => {
-      e.stopPropagation();
-      this.dispatchEvent(new CustomEvent('parse-requested', {
-        detail: e.detail,
-        bubbles: true
-      }));
-    });
-
-    this.addEventListener('save-requested', (e) => {
-      e.stopPropagation();
-      this.dispatchEvent(new CustomEvent('save-requested', {
-        detail: e.detail,
-        bubbles: true
-      }));
-    });
-
+  attachInternalHandlers() {
     this.addEventListener('cancel-requested', (e) => {
-      e.stopPropagation();
-      this.close();
+      if (e.target !== this) {
+        e.stopPropagation();
+        this.close();
+      }
     });
 
     this.addEventListener('retry-requested', (e) => {
-      e.stopPropagation();
-      this.currentState = 'selecting';
-      this.renderContent();
+      if (e.target !== this) {
+        e.stopPropagation();
+        this.currentState = 'selecting';
+        this.renderContent();
+      }
     });
 
     this.addEventListener('close-requested', (e) => {
-      e.stopPropagation();
-      this.close();
+      if (e.target !== this) {
+        e.stopPropagation();
+        this.close();
+      }
     });
   }
 

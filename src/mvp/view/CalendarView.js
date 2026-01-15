@@ -11,6 +11,7 @@ export class CalendarView {
     onFabClicked = null;
     onParseRequested = null;
     onSaveRequested = null;
+    listenersAttached = false;
 
     constructor() {
         this.calendar = new Calendar();
@@ -42,7 +43,10 @@ export class CalendarView {
         this.onRendered();
     }
 
-    attachUploadListeners() {
+    attaif (this.listenersAttached) return;
+        this.listenersAttached = true;
+
+        chUploadListeners() {
         this.fab.addEventListener('fab-clicked', () => {
             if (this.onFabClicked) this.onFabClicked();
         });
