@@ -1,31 +1,28 @@
-import CalendarRepository from '../repositories/CalendarRepository.js';
+import DataRepository from '../repositories/DataRepository.js';
 
 /**
  * Service do obsługi danych kalendarza.
  * Warstwa abstrakcji - Presenter nie wie SKĄD pochodzą dane.
- * 
- * Service używa Repository - źródło danych (mock/Firebase) 
- * kontrolowane jest w CalendarRepository przez flagę USE_MOCK.
  */
 export class CalendarService {
 
     async getRooms() {
-        return await CalendarRepository.getRooms();
+        return await DataRepository.getRooms();
     }
 
     async getCustomers() {
-        return await CalendarRepository.getCustomers();
+        return await DataRepository.getCustomers();
     }
 
     async getBookings() {
-        return await CalendarRepository.getBookings();
+        return await DataRepository.getBookings();
     }
 
     async saveBooking(bookingData) {
-        return await CalendarRepository.saveBooking(bookingData);
+        return await DataRepository.saveBooking(bookingData);
     }
 
     async saveCustomer(customerId, customerData) {
-        return await CalendarRepository.saveCustomer(customerId, customerData);
+        return await DataRepository.saveCustomer(customerId, customerData);
     }
 }

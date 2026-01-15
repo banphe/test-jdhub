@@ -1,5 +1,4 @@
-import ReportRepository from '../repositories/ReportRepository.js';
-import TherapistRepository from '../repositories/TherapistRepository.js';
+import DataRepository from '../repositories/DataRepository.js';
 import ReportAdapter from '../adapters/ReportAdapter.js';
 
 /**
@@ -16,9 +15,9 @@ export default class ReportService {
   
   async getReportData() {
     const [bookings, therapists, therapistDaysOff] = await Promise.all([
-      ReportRepository.getBookings(),
-      TherapistRepository.getAll(),
-      TherapistRepository.getAllDaysOff()
+      DataRepository.getBookings(),
+      DataRepository.getTherapists(),
+      DataRepository.getTherapistDaysOff()
     ]);
     return this.adapter.aggregateToMonthly(bookings, therapists, therapistDaysOff);
   }
