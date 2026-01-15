@@ -3,7 +3,7 @@
 import Calendar from './components/calendar.js';
 import DetailPanel from './components/detail-panel.js';
 import FloatingActionButton from './components/floating-action-button.js';
-import UploadModal from './components/upload-modal.js';
+import UploadModal from './components/upload-modal-v2.js';
 
 export class CalendarView {
     onRendered = null;

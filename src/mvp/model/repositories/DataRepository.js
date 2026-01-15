@@ -2,11 +2,6 @@ import { db } from '../../config/firebase-init.js';
 import { collection, getDocs, addDoc, doc, setDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 import { COLLECTIONS } from '../../config/constants.js';
 
-/**
- * Zunifikowane repository dla wszystkich danych aplikacji.
- * Eliminuje duplikację między CalendarRepository, ReportRepository i TherapistRepository.
- * Obsługuje wyłącznie Firebase Firestore.
- */
 export default class DataRepository {
   
   // ==================== READ OPERATIONS ====================
