@@ -38,8 +38,43 @@ export default class UploadModalV2 extends HTMLElement {
         this.close();
       });
 
+      this.attachEventDelegation();
       this.rendered = true;
     }
+  }
+
+  attachEventDelegation() {
+    this.addEventListener('parse-requested', (e) => {
+      e.stopPropagation();
+      this.dispatchEvent(new CustomEvent('parse-requested', {
+        detail: e.detail,
+        bubbles: true
+      }));
+    });
+
+    this.addEventListener('save-requested', (e) => {
+      e.stopPropagation();
+      this.dispatchEvent(new CustomEvent('save-requested', {
+        detail: e.detail,
+        bubbles: true
+      }));
+    });
+
+    this.addEventListener('cancel-requested', (e) => {
+      e.stopPropagation();
+      this.close();
+    });
+
+    this.addEventListener('retry-requested', (e) => {
+      e.stopPropagation();
+      this.currentState = 'selecting';
+      this.renderContent();
+    });
+
+    this.addEventListener('close-requested', (e) => {
+      e.stopPropagation();
+      this.close();
+    });
   }
 
   open() {
@@ -94,7 +129,6 @@ export default class UploadModalV2 extends HTMLElement {
 
     if (this.currentState === 'selecting') {
       content.innerHTML = '<upload-modal-selecting></upload-modal-selecting>';
-      this.attachSelectingListeners();
     }
 
     if (this.currentState === 'loading') {
@@ -103,64 +137,14 @@ export default class UploadModalV2 extends HTMLElement {
 
     if (this.currentState === 'preview') {
       content.innerHTML = '<upload-modal-preview></upload-modal-preview>';
-      this.attachPreviewListeners();
     }
 
     if (this.currentState === 'error') {
       content.innerHTML = '<upload-modal-error></upload-modal-error>';
-      this.attachErrorListeners();
     }
 
     if (this.currentState === 'success') {
       content.innerHTML = '<upload-modal-success></upload-modal-success>';
-      this.attachSuccessListeners();
-    }
-  }
-
-  attachSelectingListeners() {
-    const selecting = this.querySelector('upload-modal-selecting');
-    if (selecting) {
-      selecting.addEventListener('parse-requested', (e) => {
-        this.dispatchEvent(new CustomEvent('parse-requested', {
-          detail: e.detail,
-          bubbles: true
-        }));
-      });
-    }
-  }
-
-  attachPreviewListeners() {
-    const preview = this.querySelector('upload-modal-preview');
-    if (preview) {
-      preview.addEventListener('save-requested', (e) => {
-        this.dispatchEvent(new CustomEvent('save-requested', {
-          detail: e.detail,
-          bubbles: true
-        }));
-      });
-
-      preview.addEventListener('cancel-requested', () => {
-        this.close();
-      });
-    }
-  }
-
-  attachErrorListeners() {
-    const error = this.querySelector('upload-modal-error');
-    if (error) {
-      error.addEventListener('retry-requested', () => {
-        this.currentState = 'selecting';
-        this.renderContent();
-      });
-    }
-  }
-
-  attachSuccessListeners() {
-    const success = this.querySelector('upload-modal-success');
-    if (success) {
-      success.addEventListener('close-requested', () => {
-        this.close();
-      });
     }
   }
 }
