@@ -62,6 +62,19 @@ export default class Calendar extends HTMLElement {
             this.calendar.updateSize();
         }
     }
+    
+    goToDate(date) {
+        if (this.calendar) {
+            this.calendar.gotoDate(date);
+        }
+    }
+    
+    getCurrentDate() {
+        if (this.calendar) {
+            return this.calendar.getDate();
+        }
+        return new Date();
+    }
 }
 
 customElements.define('app-calendar', Calendar);

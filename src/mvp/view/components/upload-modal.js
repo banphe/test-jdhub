@@ -79,25 +79,34 @@ export default class UploadModal extends HTMLElement {
     if (this.currentState === 'selecting') {
       content.innerHTML = `
         <div class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
-          <i class="fas fa-cloud-upload-alt text-5xl text-gray-400 mb-4"></i>
-          <p class="text-gray-600 mb-4">Wybierz zrzut ekranu z aplikacji Booksy</p>
-          <input type="file" id="image-input" accept="image/*" class="hidden">
-          <button id="select-image-btn" class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-6 rounded-lg">
-            Wybierz zdjęcie
-          </button>
-          <div id="preview-container" class="mt-4 hidden">
-            <img id="image-preview" class="max-w-full max-h-64 mx-auto rounded border">
-            <button id="parse-btn" class="mt-4 bg-green-500 hover:bg-green-600 text-white py-2 px-6 rounded-lg">
-              Parsuj
+          <div id="initial-upload">
+            <i class="fas fa-cloud-upload-alt text-5xl text-gray-400 mb-4"></i>
+            <p class="text-gray-600 mb-4">Wybierz zrzut ekranu z aplikacji Booksy</p>
+            <input type="file" id="image-input" accept="image/*" class="hidden">
+            <button id="select-image-btn" class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-6 rounded-lg">
+              Wybierz zdjęcie
             </button>
+          </div>
+          <div id="preview-container" class="hidden">
+            <img id="image-preview" class="max-w-full mx-auto rounded border mb-4">
+            <div class="flex gap-3 justify-center">
+              <button id="cancel-selection-btn" class="bg-gray-300 hover:bg-gray-400 text-gray-800 py-2 px-6 rounded-lg">
+                Anuluj
+              </button>
+              <button id="parse-btn" class="bg-green-500 hover:bg-green-600 text-white py-2 px-6 rounded-lg">
+                Parsuj
+              </button>
+            </div>
           </div>
         </div>
       `;
 
       const input = content.querySelector('#image-input');
       const selectBtn = content.querySelector('#select-image-btn');
+      const initialUpload = content.querySelector('#initial-upload');
       const previewContainer = content.querySelector('#preview-container');
       const imagePreview = content.querySelector('#image-preview');
+      const cancelSelectionBtn = content.querySelector('#cancel-selection-btn');
       const parseBtn = content.querySelector('#parse-btn');
 
       selectBtn.addEventListener('click', () => input.click());
@@ -109,10 +118,18 @@ export default class UploadModal extends HTMLElement {
           const reader = new FileReader();
           reader.onload = (event) => {
             imagePreview.src = event.target.result;
+            initialUpload.classList.add('hidden');
             previewContainer.classList.remove('hidden');
           };
           reader.readAsDataURL(file);
         }
+      });
+
+      cancelSelectionBtn.addEventListener('click', () => {
+        this.selectedImage = null;
+        input.value = '';
+        initialUpload.classList.remove('hidden');
+        previewContainer.classList.add('hidden');
       });
 
       parseBtn.addEventListener('click', () => {
@@ -186,7 +203,11 @@ export default class UploadModal extends HTMLElement {
           ${therapistHtml}
           <div class="flex items-center gap-2">
             <i class="fas fa-calendar text-gray-500"></i>
-            <span>${dateStr} ${timeStr}</span>
+            <span>${dateStr}</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <i class="fas fa-clock text-gray-500"></i>
+            <span>${timeStr}</span>
           </div>
           <div class="flex items-center gap-2">
             <i class="fas fa-door-open text-gray-500"></i>

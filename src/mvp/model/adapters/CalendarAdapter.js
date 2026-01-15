@@ -46,7 +46,7 @@ export class CalendarAdapter {
             resourceId: booking.roomId,
             start: booking.start,
             end: booking.end,
-            title: `${booking.menuItemName} [${booking.externalId || 'BRAK'}]`,
+            title: booking.menuItemName,
             backgroundColor: backgroundColor,
             borderColor: backgroundColor,
             extendedProps: {

@@ -98,11 +98,15 @@ export class CalendarPresenter {
 
             this.view.showUploadSuccess(bookingId);
 
+            const currentDate = this.view.getCurrentDate();
+            
             this.rooms = null;
             this.bookings = null;
             this.customers = null;
             await this.loadData();
             this.renderCalendar();
+            
+            this.view.navigateToDate(currentDate);
         } catch (error) {
             console.error('Error saving booking:', error);
             this.view.showUploadError('Błąd podczas zapisywania rezerwacji');

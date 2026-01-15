@@ -70,6 +70,14 @@ export class CalendarView {
         this.detailPanel.hide();
         setTimeout(() => this.calendar.updateSize(), 300);
     }
+    
+    getCurrentDate() {
+        return this.calendar.getCurrentDate();
+    }
+    
+    navigateToDate(date) {
+        this.calendar.goToDate(date);
+    }
 
     openUploadModal() {
         this.uploadModal.open();
