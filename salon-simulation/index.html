@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Symulacja Salonu Masaży</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen p-4">
+  <div class="max-w-6xl mx-auto">
+    <!-- Panel Parametry -->
+    <div class="bg-white rounded-lg shadow p-3 mb-3">
+      <h2 class="text-lg font-semibold text-gray-700 mb-3">Parametry</h2>
+      
+      <!-- Godziny otwarcia -->
+      <div class="mb-2">
+        <div class="flex items-center gap-3">
+          <label class="text-gray-700 text-sm w-48 cursor-help" title="Ilosć godzin w jakich salon jest orwarty każdego dnia miesiąca">Godziny otwarcia salonu</label>
+          <div class="flex items-center gap-2 flex-1">
+            <button id="hoursOpenDec" class="w-8 h-8 bg-gray-200 hover:bg-gray-300 rounded text-gray-700 font-bold">-</button>
+            <span class="text-sm font-bold text-blue-600 w-12 text-center" id="hoursValue">10</span>
+            <button id="hoursOpenInc" class="w-8 h-8 bg-gray-200 hover:bg-gray-300 rounded text-gray-700 font-bold">+</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Gabinety -->
+      <div class="mb-2">
+        <div class="flex items-center gap-3">
+          <label class="text-gray-700 text-sm w-48 cursor-help" title="Ilość jedno osobowych gabinetów w salonie">Gabinety</label>
+          <div class="flex items-center gap-2 flex-1">
+            <button id="cabinsDec" class="w-8 h-8 bg-gray-200 hover:bg-gray-300 rounded text-gray-700 font-bold">-</button>
+            <span class="text-sm font-bold text-blue-600 w-12 text-center" id="cabinsValue">2</span>
+            <button id="cabinsInc" class="w-8 h-8 bg-gray-200 hover:bg-gray-300 rounded text-gray-700 font-bold">+</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Masażyści -->
+      <div class="mb-2">
+        <div class="flex items-center gap-3">
+          <label class="text-gray-700 text-sm w-48 cursor-help" title="Ilość masażystów pracujących w salonie">Ilość masażystów</label>
+          <div class="flex items-center gap-2 flex-1">
+            <button id="therapistsDec" class="w-8 h-8 bg-gray-200 hover:bg-gray-300 rounded text-gray-700 font-bold">-</button>
+            <span class="text-sm font-bold text-blue-600 w-12 text-center" id="therapistsValue">4</span>
+            <button id="therapistsInc" class="w-8 h-8 bg-gray-200 hover:bg-gray-300 rounded text-gray-700 font-bold">+</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Masażogodziny -->
+      <div class="mb-2">
+        <div class="flex items-center gap-3">
+          <label class="text-gray-700 text-sm w-48 cursor-help" title="Średnia ilość godzin wykonanych masaży przez jednego masażystę każdego dnia miesiąca">Masażogodziny</label>
+          <div class="flex items-center gap-2 flex-1">
+            <button id="massageHoursDec" class="w-8 h-8 bg-gray-200 hover:bg-gray-300 rounded text-gray-700 font-bold">-</button>
+            <span class="text-sm font-bold text-blue-600 w-12 text-center" id="massageHoursValue">5</span>
+            <button id="massageHoursInc" class="w-8 h-8 bg-gray-200 hover:bg-gray-300 rounded text-gray-700 font-bold">+</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dostępność masażysty -->
+      <div class="mb-2">
+        <div class="flex items-center gap-3">
+          <label class="text-gray-700 text-sm w-48 cursor-help" title="Ilość godzin w których masażysta jest dostępny w systemie Booksy każdego dnia">Dostępność masażysty</label>
+          <div class="flex items-center gap-2 flex-1">
+            <button id="therapistAvailabilityDec" class="w-8 h-8 bg-gray-200 hover:bg-gray-300 rounded text-gray-700 font-bold">-</button>
+            <span class="text-sm font-bold text-blue-600 w-12 text-center" id="therapistAvailabilityValue">10</span>
+            <button id="therapistAvailabilityInc" class="w-8 h-8 bg-gray-200 hover:bg-gray-300 rounded text-gray-700 font-bold">+</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Koszty miesięczne -->
+      <div class="mb-2">
+        <div class="flex items-center gap-3">
+          <label class="text-gray-700 text-sm w-48 cursor-help" title="Całkowite koszty miesięczne salonu (czynsz, media, ubezpieczenia itp.)">Koszty miesięczne</label>
+          <div class="flex items-center gap-2 flex-1">
+            <button id="monthlyCostsDec" class="w-8 h-8 bg-gray-200 hover:bg-gray-300 rounded text-gray-700 font-bold">-</button>
+            <span class="text-sm font-bold text-blue-600 w-16 text-center" id="monthlyCostsValue">6000</span>
+            <button id="monthlyCostsInc" class="w-8 h-8 bg-gray-200 hover:bg-gray-300 rounded text-gray-700 font-bold">+</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Przychód za masażogodzinę -->
+      <div class="mb-2">
+        <div class="flex items-center gap-3">
+          <label class="text-gray-700 text-sm w-48 cursor-help" title="Średni przychód za jedną godzinę masażu">Przychód masażogodziny</label>
+          <div class="flex items-center gap-2 flex-1">
+            <button id="hourlyRevenueDec" class="w-8 h-8 bg-gray-200 hover:bg-gray-300 rounded text-gray-700 font-bold">-</button>
+            <span class="text-sm font-bold text-blue-600 w-16 text-center" id="hourlyRevenueValue">140</span>
+            <button id="hourlyRevenueInc" class="w-8 h-8 bg-gray-200 hover:bg-gray-300 rounded text-gray-700 font-bold">+</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stawka godzinowa masażysty -->
+      <div class="mb-2">
+        <div class="flex items-center gap-3">
+          <label class="text-gray-700 text-sm w-48 cursor-help" title="Stawka godzinowa płacona masażyście za wykonaną godzinę masażu">Stawka godzinowa masażysty</label>
+          <div class="flex items-center gap-2 flex-1">
+            <button id="therapistHourlyRateDec" class="w-8 h-8 bg-gray-200 hover:bg-gray-300 rounded text-gray-700 font-bold">-</button>
+            <span class="text-sm font-bold text-blue-600 w-16 text-center" id="therapistHourlyRateValue">75</span>
+            <button id="therapistHourlyRateInc" class="w-8 h-8 bg-gray-200 hover:bg-gray-300 rounded text-gray-700 font-bold">+</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Panel Wyniki -->
+    <div class="bg-white rounded-lg shadow p-3">
+      <h2 class="text-lg font-semibold text-gray-700 mb-3">Wyniki</h2>
+      
+      <div id="results" class="flex flex-wrap gap-3">
+        <!-- Wyniki renderowane przez app.js -->
+      </div>
+    </div>
+  </div>
+
+  <script src="simulation.js"></script>
+  <script src="validation.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
